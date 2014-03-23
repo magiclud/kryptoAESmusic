@@ -70,33 +70,10 @@ public class AES {
 		return null;
 	}
 
-	public static void zapiszZakodowanaWiadomoscDoPilku(byte[] kryptogram,
-			String plikZWiadomoscia) {
-
-		File kryptogramFile = new File(plikZWiadomoscia);
-		FileOutputStream stream;
-		try {
-			stream = new FileOutputStream(kryptogramFile);
-
-			stream.write(kryptogram);
-			stream.close();
-			// System.out.println("sceizka do kryptogramu"
-			// + kryptogramFile.getAbsolutePath());
-
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-	}
-
-	public static void zaszyfrowanieWiadomosci(Key klucz,
-			String sciezkaWejsciowa, String sciezkaWyjsciowa) {
+	
+	public static byte[] zaszyfrowanieWiadomosci(Key klucz,
+			String sciezkaWejsciowa) {
 		IvParameterSpec ivSpec = new IvParameterSpec(new byte[16]);
-		// przygotowanie do zaszyfrowania
 		Cipher aesCipher;
 		try {
 			aesCipher = Cipher.getInstance("AES/CTR/NoPadding", "BC");
@@ -104,24 +81,22 @@ public class AES {
 			aesCipher.init(Cipher.ENCRYPT_MODE, klucz, ivSpec);
 
 			File inFile = new File(sciezkaWejsciowa);
-			File outFile = new File(sciezkaWyjsciowa);
 			FileInputStream inputStream = new FileInputStream(inFile);
 			ByteArrayOutputStream bOut = new ByteArrayOutputStream();
-			FileOutputStream out = new FileOutputStream(outFile);
 			CipherInputStream inCipherStream = new CipherInputStream(inputStream,
 					aesCipher);
 			int ch;
-			while ((ch = inputStream.read()) >= 0) {
+			while ((ch = inCipherStream.read()) >= 0) {
 				bOut.write(ch);
 			}
 
 			byte[] cipherText = bOut.toByteArray();
-			out.write(cipherText);
-
-			aesCipher.doFinal(cipherText);
+		
 			inCipherStream.close();
 			inputStream.close();
-			out.close();
+			
+			aesCipher.doFinal(cipherText);
+			return cipherText;
 		} catch (NoSuchAlgorithmException | NoSuchProviderException
 				| NoSuchPaddingException | InvalidKeyException
 				| InvalidAlgorithmParameterException | IOException e) {
@@ -134,49 +109,32 @@ public class AES {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
+		return null;
 	}
 
 	public static byte[] deszyfrowanieWiadomosci(Key klucz,
-			String sciezkaWejsciowa, String sciezkaWyjsciowa) {
+			byte[] zaszyfrowanyPlik, String sciezkaWyjsciowa) {
 		IvParameterSpec ivSpec = new IvParameterSpec(new byte[16]);
 		Cipher aesCipher;
 		try {
 			aesCipher = Cipher.getInstance("AES/CTR/NoPadding", "BC");
-
 			aesCipher.init(Cipher.DECRYPT_MODE, klucz, ivSpec);
 
-			File outFile = new File(sciezkaWyjsciowa);
-			File inFile = new File(sciezkaWejsciowa);
+			File outFile = new File(sciezkaWyjsciowa);		
 			FileOutputStream outputStream = new FileOutputStream(outFile);
 			ByteArrayOutputStream bOut = new ByteArrayOutputStream();
-			FileInputStream input = new FileInputStream(inFile);
 			CipherOutputStream inCipherStream = new CipherOutputStream(bOut,
 					aesCipher);
 
-			int ch;
-			while ((ch = input.read()) >= 0) {
-				inCipherStream.write(ch);
-			}
+				inCipherStream.write(zaszyfrowanyPlik);	
 
 			byte[] cipherText = bOut.toByteArray();
-			outputStream.write(cipherText);
-
+			outputStream.write(zaszyfrowanyPlik);
+			
+			inCipherStream.close();
+			bOut.close();
 			aesCipher.doFinal(cipherText);
 		
-			
-			AudioInputStream outSteream;
-		
-				outSteream = AudioSystem
-						.getAudioInputStream(new ByteArrayInputStream(
-								cipherText));
-				Clip clip = AudioSystem.getClip();
-				clip.open(outSteream);
-				clip.start();
-				
-				
-				inCipherStream.close();
-				bOut.close();
 			return cipherText;
 		} catch (NoSuchAlgorithmException | NoSuchProviderException
 				| NoSuchPaddingException e) {
@@ -200,13 +158,8 @@ public class AES {
 		} catch (BadPaddingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (UnsupportedAudioFileException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (LineUnavailableException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		} 
+		
 		return null;
 
 	}

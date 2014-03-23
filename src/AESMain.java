@@ -46,44 +46,31 @@ public class AESMain {
 		// char aliasHasla[] = console
 		// .readPassword("Identyikator  do klucza z keystore'a: \n");
 
-		// String hasloDoKeystora = "ala ma kota";
-		// String aliasHasla = "mojAlias";
-		// String sciezkaDoKeyStore = "
-		// D:\eclipse\Semestr4\KryptographyLista1\keyStore.ks";
-
 		String sciezkaWejsciowa = "D:\\eclipse\\Semestr4\\AESplikMuzyczny\\input.wav";
-		String sciezkaWyjsciowa = "D:\\eclipse\\Semestr4\\AESplikMuzyczny\\output.wav";
-		AES.zaszyfrowanieWiadomosci(AES.pobierzKlucz(sciezkaDoKeyStore,
+		byte[] zaszyfrowanyPlik = AES.zaszyfrowanieWiadomosci(AES.pobierzKlucz(sciezkaDoKeyStore,
 				new String(aliasHasla), new String(hasloDoKeystora)),
-				sciezkaWejsciowa, sciezkaWyjsciowa);
+				sciezkaWejsciowa);
 
-		String sciezkaWejsciowa2 = "D:\\eclipse\\Semestr4\\AESplikMuzyczny\\output.wav";
-		String sciezkaWyjsciowa2 = "D:\\eclipse\\Semestr4\\AESplikMuzyczny\\Decriptoutput.wav";
-
+		String sciezkaWyjsciowa = "D:\\eclipse\\Semestr4\\AESplikMuzyczny\\Decriptoutput.wav";
 		byte[] zdekodowanyTekst = AES.deszyfrowanieWiadomosci(AES.pobierzKlucz(
 				sciezkaDoKeyStore, new String(aliasHasla), new String(
-						hasloDoKeystora)), sciezkaWejsciowa, sciezkaWyjsciowa);
+						hasloDoKeystora)), zaszyfrowanyPlik, sciezkaWyjsciowa);
 
-//		AudioInputStream outSteream;
-//		try {
-//			outSteream = AudioSystem
-//					.getAudioInputStream(new ByteArrayInputStream(
-//							zdekodowanyTekst));
-//			Clip clip = AudioSystem.getClip();
-//			clip.open(outSteream);
-//			clip.start();
-//		} catch (UnsupportedAudioFileException | LineUnavailableException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-
+		AudioInputStream outSteream;
+		try {
+			outSteream = AudioSystem
+					.getAudioInputStream(new ByteArrayInputStream(
+							zdekodowanyTekst));
+			Clip clip = AudioSystem.getClip();
+			clip.open(outSteream);
+			clip.start();
+		} catch (UnsupportedAudioFileException | LineUnavailableException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		JFrame a = new JFrame();
 		a.setVisible(true);
-
-		// System.out.println("Wiadomosc: " + wiadomosc);
-		// System.out.println("Kryptogram: " + new String(kryptogram));
-		// System.out.println("Odszyfrowana wiadomosc: "
-		// + new String(zdekodowanyTekst));
 
 	}
 }
