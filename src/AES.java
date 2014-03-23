@@ -1,4 +1,5 @@
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -24,6 +25,11 @@ import javax.crypto.CipherOutputStream;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 
 public class AES {
 
@@ -101,8 +107,8 @@ public class AES {
 			File outFile = new File(sciezkaWyjsciowa);
 			FileInputStream inputStream = new FileInputStream(inFile);
 			ByteArrayOutputStream bOut = new ByteArrayOutputStream();
-			// FileOutputStream out = new FileOutputStream(outFile);
-			CipherOutputStream outCipherStream = new CipherOutputStream(bOut,
+			FileOutputStream out = new FileOutputStream(outFile);
+			CipherInputStream inCipherStream = new CipherInputStream(inputStream,
 					aesCipher);
 			int ch;
 			while ((ch = inputStream.read()) >= 0) {
@@ -110,11 +116,12 @@ public class AES {
 			}
 
 			byte[] cipherText = bOut.toByteArray();
-			outCipherStream.write(cipherText);
+			out.write(cipherText);
 
 			aesCipher.doFinal(cipherText);
-			outCipherStream.close();
+			inCipherStream.close();
 			inputStream.close();
+			out.close();
 		} catch (NoSuchAlgorithmException | NoSuchProviderException
 				| NoSuchPaddingException | InvalidKeyException
 				| InvalidAlgorithmParameterException | IOException e) {
@@ -144,20 +151,32 @@ public class AES {
 			FileOutputStream outputStream = new FileOutputStream(outFile);
 			ByteArrayOutputStream bOut = new ByteArrayOutputStream();
 			FileInputStream input = new FileInputStream(inFile);
-			CipherInputStream inCipherStream = new CipherInputStream(input,
+			CipherOutputStream inCipherStream = new CipherOutputStream(bOut,
 					aesCipher);
 
 			int ch;
-			while ((ch = inCipherStream.read()) >= 0) {
-				bOut.write(ch);
+			while ((ch = input.read()) >= 0) {
+				inCipherStream.write(ch);
 			}
 
 			byte[] cipherText = bOut.toByteArray();
 			outputStream.write(cipherText);
 
 			aesCipher.doFinal(cipherText);
-			inCipherStream.close();
-			bOut.close();
+		
+			
+			AudioInputStream outSteream;
+		
+				outSteream = AudioSystem
+						.getAudioInputStream(new ByteArrayInputStream(
+								cipherText));
+				Clip clip = AudioSystem.getClip();
+				clip.open(outSteream);
+				clip.start();
+				
+				
+				inCipherStream.close();
+				bOut.close();
 			return cipherText;
 		} catch (NoSuchAlgorithmException | NoSuchProviderException
 				| NoSuchPaddingException e) {
@@ -179,6 +198,12 @@ public class AES {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (BadPaddingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (UnsupportedAudioFileException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (LineUnavailableException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

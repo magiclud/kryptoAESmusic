@@ -35,7 +35,7 @@ public class AESMain {
 		String trybSzyfrowania = "OFB";
 		String hasloDoKeystora = "ala ma kota";
 		String aliasHasla = "mojAlias";
-		String sciezkaDoKeyStore = "D:\\eclipse\\Semestr4\\AES\\keyStore.ks";
+		String sciezkaDoKeyStore = "D:\\eclipse\\Semestr4\\AESplikMuzyczny\\keyStore.ks";
 		// Console console = System.console();
 		// console.printf("Podaj tryb szyfrowania np. OFB lub CTR \n");
 		// String trybSzyfrowania = console.readLine();
@@ -64,18 +64,18 @@ public class AESMain {
 				sciezkaDoKeyStore, new String(aliasHasla), new String(
 						hasloDoKeystora)), sciezkaWejsciowa, sciezkaWyjsciowa);
 
-		AudioInputStream outSteream;
-		try {
-			outSteream = AudioSystem
-					.getAudioInputStream(new ByteArrayInputStream(
-							zdekodowanyTekst));
-			Clip clip = AudioSystem.getClip();
-			clip.open(outSteream);
-			clip.start();
-		} catch (UnsupportedAudioFileException | LineUnavailableException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		AudioInputStream outSteream;
+//		try {
+//			outSteream = AudioSystem
+//					.getAudioInputStream(new ByteArrayInputStream(
+//							zdekodowanyTekst));
+//			Clip clip = AudioSystem.getClip();
+//			clip.open(outSteream);
+//			clip.start();
+//		} catch (UnsupportedAudioFileException | LineUnavailableException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 
 		JFrame a = new JFrame();
 		a.setVisible(true);
